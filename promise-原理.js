@@ -1,6 +1,6 @@
 /**
  * 1. new Promise时，需要传递一个executor执行器，执行器立即执行
- * 2. executor 接受两个参数，分别是resolve和reject
+ * 2. executor 接受两个参数,参数是函数，分别是resolve和reject
  * 3. promise 只能从pending到rejected，或者从pending到fulfilled
  * 4. promise 的状态一旦确认，就不会再改变
  * 5. promise都有then方法，then接收两个参数，分别是promise成功的回调onFulfilled，和promise失败的回调onRedjected
@@ -16,3 +16,56 @@
  */
 
 const PENDING = "pending";
+const FULFILLED = "fulfilled";
+const REJECTED = "rejected";
+
+class Promise {
+  constructor(executor) {
+    console.log("new Promise:", executor.toString());
+    this.status = PENDING;
+    this.value = "";
+    this.reason = "";
+    const resolve = (value) => {
+      if (this.status === PENDING) {
+        this.status = FULFILLED;
+        this.value = value;
+      }
+    };
+    const reject = (reason) => {
+      if (this.status === PENDING) {
+        this.status = REJECTED;
+        this.reason = reason;
+      }
+    };
+    try {
+      executor(resolve, reject);
+    } catch (error) {
+      reject(error);
+    }
+  }
+  then(onFufilled = () => {}, onRejected = () => {}) {
+    if (this.status === FULFILLED) {
+      onFufilled(this.value);
+    }
+    if (this.status === REJECTED) {
+      onRejected(this.reason);
+    }
+  }
+}
+
+// 测试使用promise
+new Promise((resolve, reject) => {
+  console.log("before resolve");
+  if (Math.random() > 0.5) {
+    resolve("resolve 结果");
+  } else {
+    reject("reject 结果");
+  }
+}).then(
+  (res) => {
+    console.log("then res:", res);
+  },
+  (err) => {
+    console.log("err:", err);
+  }
+);
