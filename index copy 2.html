@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 订阅者模式
+        class EventEmitter {
+            constructor() {
+                this._fnlist = this._fnlist || new Map();
+                this._maxNumber = this._maxNumber || 5;
+            }
+
+            addEvent(name, fn) {
+                const handler = this._fnlist.get(name);
+                if (!handler) {
+                    this._fnlist.set(name, [fn]);
+                } else {
+                    if (!Array.isArray(handler)) {
+                        this._fnlist.set(name, [handler, fn]);
+                    } else {
+                        if (handler.length >= this._maxNumber) {
+                            return console.error('超过最大监听个数');
+                        }
+                        this._fnlist.set(name, [...handler, fn]);
+                    }
+                }
+            }
+            remove(name) {
+                this._fnlist.set(name, null);
+            }
+
+            emit(fn, ...arges) {
+                const handler = this._fnlist.get(fn);
+                if (Array.isArray(handler)) {
+                    handler.forEach(item => {
+                        if (arges.length > 0) {
+                            item.apply(this, arges);
+
+                        } else {
+                            item.call(this);
+                        }
+                    });
+                } else if (typeof handler === Function) {
+                    if (arges.length > 0) {
+                        handler.apply(this, arges);
+
+                    } else {
+                        handler.call(this);
+                    }
+                }
+
+            }
+        }
+
+        const Event = new EventEmitter();
+        Event.addEvent('up', (a) => {
+            console.log('up1', a);
+        });
+        Event.addEvent('up', (a) => {
+            console.log('up2', a);
+        });
+        Event.addEvent('up', (a) => {
+            console.log('up3', a);
+        });
+        Event.addEvent('up', (a) => {
+            console.log('up4', a);
+        });
+        Event.addEvent('up', (a) => {
+            console.log('up5', a);
+        });
+        Event.addEvent('up', (a) => {
+            console.log('up5', a);
+        });
+        Event.addEvent('up', (a) => {
+            console.log('up6', a);
+        });
+        Event.addEvent('up', (a) => {
+            console.log('up7', a);
+        });
+        Event.addEvent('up', (a) => {
+            console.log('up8', a);
+        });
+        Event.addEvent('up', (a) => {
+            console.log('up9', a);
+        });
+        Event.remove('up');
+        Event.emit('up', 'xxxxxxxxxx1');
+        Event.emit('up', 'xxxxxxxxxx2');
+        Event.emit('up', 'xxxxxxxxxx3');
+        console.log(Event._fnlist.get('up'));
+        Event.addEvent('up', (a) => {
+            console.log('up9', a);
+        });
+        Event.emit('up', 'xxxxxxxxxx1');
+
+    </script>
+</body>
+
+</html>

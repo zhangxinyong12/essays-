@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<script>
+    // 监听页面错误
+    window.addEventListener('error', (e) => {
+        console.log(e);
+        console.log(e);
+    }, true);
+    window.onerror = (e) => {
+        console.log(e);
+    }
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="aaa.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+
+
+        li {
+            list-style: none;
+        }
+
+        /* #bg {
+            background: aquamarine;
+        } */
+
+        @keyframes egg {
+            0% {
+                top: 0;
+                left: 0;
+            }
+
+            25% {
+                top: 50%;
+                left: 50%;
+            }
+
+            50% {
+                top: 100%;
+                left: 0%;
+            }
+
+            75% {
+                top: 50%;
+                left: 50%;
+            }
+
+            100% {
+                top: 0%;
+                left: 0%;
+            }
+        }
+
+        .box .bg1>div {
+            border-radius: 50%;
+            background: red;
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            /* animation: name duration timing-function delay iteration-count direction fill-mode; */
+            /* animation: egg 3s 2s 0s infinite 3s none; */
+            animation-name: egg;
+            animation-duration: 4s;
+            animation-delay: 0s;
+            animation-direction: normal;
+            animation-fill-mode: none;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease;
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="box">
+        <li class="bg1">
+            <div id="bg"></div>
+        </li>
+    </ul>
+</body>
+
+</html>

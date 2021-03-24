@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    const data = {
+        name: ''
+    };
+
+    function say(name) {
+        if (name === '古天乐') {
+            console.log('给大家推荐一款超级好玩的游戏');
+        } else if (name === '渣渣辉') {
+            console.log('戏我演很多，可游戏我只玩贪玩蓝月');
+        } else {
+            console.log('来做我的兄弟');
+        }
+    }
+    Object.keys(data).forEach((key) => {
+        Object.defineProperty(data, key, {
+            enumerable: true,
+            configurable: true,
+            get: function () {
+                console.log('get');
+            },
+            set: function (newValue) {
+                console.log(`大家号，我是${newValue}`);
+                say(newValue);
+            }
+        })
+    });
+    data.name = '渣渣辉';
+
+    class EventEmeitter {
+        constructor() {
+            this._events = this._events || new Map();
+            this._maxListeners = this._maxListeners || 10;
+        }
+        emit(type, ...args) {
+            let handler;
+            handler = this._events.get(type);
+            if (args.length > 0) {
+                handler.apply(this, args);
+            } else {
+                handler.call(this);
+            }
+            return true;
+        }
+        addListener(type, fn) {
+            if (!this._events.get(type)) {
+                this._events.set(type, fn);
+            }
+        }
+    }
+
+    const emitter = new EventEmeitter();
+    const emitter2 = new EventEmeitter();
+    emitter.addListener('arson', man => {
+        console.log(`expel ${man}`);
+    });
+    emitter.emit('arson', 'loa-end');
+</script>
+
+</html>

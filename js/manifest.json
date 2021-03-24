@@ -1,0 +1,18 @@
+{
+    "manifest_version": 2,
+    "name": "谷歌插件开发-demo",
+    "description": "This extension demonstrates a browser action with kittens.",
+    "version": "1.0",
+    "permissions": [
+        "https://secure.flickr.com/"
+    ],
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "index.html"
+    },
+    "background": {
+        "scripts": [
+            "js/bg.js"
+        ]
+    }
+}
