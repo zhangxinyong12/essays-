@@ -25,16 +25,21 @@ class Promise {
     this.status = PENDING;
     this.value = "";
     this.reason = "";
+    this.onResolvedCallbacks = []; // 成功的
+    this.onRejectedCallbacks = []; // 失败的
     const resolve = (value) => {
       if (this.status === PENDING) {
         this.status = FULFILLED;
         this.value = value;
+        // pending -> fulfilled 按照成功的执行清单执行
+        this.onResolvedCallbacks.forEach((fn) => fn());
       }
     };
     const reject = (reason) => {
       if (this.status === PENDING) {
         this.status = REJECTED;
         this.reason = reason;
+        this.onRejectedCallbacks.forEach((fn) => fn());
       }
     };
     try {
@@ -50,17 +55,25 @@ class Promise {
     if (this.status === REJECTED) {
       onRejected(this.reason);
     }
+    // 记录pending状态 储存回调
+    if (this.status === PENDING) {
+      // 函数的回调，携带参数（闭包）
+      this.onResolvedCallbacks.push(() => onFufilled(this.value));
+      this.onRejectedCallbacks.push(() => onRejected(this.reason));
+    }
   }
 }
 
 // 测试使用promise
 new Promise((resolve, reject) => {
-  console.log("before resolve");
-  if (Math.random() > 0.5) {
-    resolve("resolve 结果");
-  } else {
-    reject("reject 结果");
-  }
+  setTimeout(() => {
+    const n = Math.random();
+    if (n > 0.5) {
+      resolve("resolve 结果:" + n);
+    } else {
+      reject("reject 结果:" + n);
+    }
+  }, 3000);
 }).then(
   (res) => {
     console.log("then res:", res);
