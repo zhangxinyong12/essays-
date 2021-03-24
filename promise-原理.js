@@ -153,36 +153,129 @@ class Promise {
     });
     return promise2;
   }
+
+  catch(fn) {
+    return this.then(null, fn);
+  }
 }
+Promise.resolve = (val) => {
+  if (val instanceof Promise) {
+    return val;
+  }
+  return new Promise((resolve) => resolve(val));
+};
+Promise.reject = (val) => {
+  return new Promise((resolve, reject) => reject(val));
+};
+
+// Promise.race([p1, p2, p3])里面哪个结果获得的快，就返回那个结果，不管结果本身是成功状态还是失败状态 。
+Promise.race = (promises) =>
+  new Promise((resolve, reject) =>
+    promises.forEach((pro) => pro.then(resolve, reject))
+  );
+
+// Promise.all可以将多个Promise实例包装成一个新的Promise实例。同时，成功和失败的返回值是不同的，成功的时候返回的是一个结果数组，而失败的时候则返回最先被reject失败状态的值。
+Promise.all = (promise) => {
+  return new Promise((resolve, reject) => {
+    let index = 0;
+    let result = [];
+    if (promise.length === 0) {
+      resolve(result);
+    } else {
+      const processValue = (i, data) => {
+        result[i] = data;
+        if (++index === promise.length) {
+          resolve(result);
+        }
+      };
+      for (let i = 0; i < promise.length; i++) {
+        // promise[i] 可能是普通值
+        Promise.resolve(promise[i]).then(
+          (data) => {
+            processValue(i, data);
+          },
+          (err) => {
+            reject(err);
+            return;
+          }
+        );
+      }
+    }
+  });
+};
+/** ---------------------------------------------------------------------------------------------------- */
 
 // 测试使用promise
-new Promise((resolve, reject) => {
+// new Promise((resolve, reject) => {
+//   setTimeout(() => {
+//     const n = Math.random();
+//     if (n > 0.5) {
+//       resolve("resolve 结果:" + n);
+//     } else {
+//       reject("reject 结果:" + n);
+//     }
+//   }, 3000);
+// })
+//   .then((res) => {
+//     console.log(`res ${res}`);
+//   })
+//   .catch((err) => {
+//     console.log(`err catch ${err}`);
+//   });
+
+Promise.resolve("222222").then((res) => {
+  console.log(res);
+});
+
+Promise.reject("reject222222").catch((err) => {
+  console.log("reject", err);
+});
+const p1 = new Promise((resolve, reject) => {
   setTimeout(() => {
     const n = Math.random();
     if (n > 0.5) {
-      resolve("resolve 结果:" + n);
+      resolve("p1 resolve 结果:" + n);
     } else {
-      reject("reject 结果:" + n);
+      reject("p1 reject 结果:" + n);
     }
-  }, 3000);
-})
-  .then(
-    (res) => {},
-    (err) => {
-      console.log("err:", err);
-      return new Promise((resolve, reject) => {
-        console.log(2);
-        setTimeout(() => {
-          reject(3);
-        }, 3000);
-      });
+  }, 900);
+});
+const p2 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    const n = Math.random();
+    if (n > 0.5) {
+      resolve("p2 resolve 结果:" + n);
+    } else {
+      reject("p2 reject 结果:" + n);
     }
-  )
-  .then(
-    (res) => {
-      console.log("then.then", res);
-    },
-    (err) => {
-      console.log("then.err:", err);
+  }, 600);
+});
+const p3 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    const n = Math.random();
+    if (n > 0.5) {
+      resolve("p3 resolve 结果:" + n);
+    } else {
+      reject("p3 reject 结果:" + n);
     }
-  );
+  }, 1300);
+});
+
+Promise.resolve(p1).then((res) => {
+  console.log("Promise.resolve(p1)", res);
+});
+Promise.race([p1, p2, p3])
+  .then((res) => {
+    console.log("race", res);
+  })
+  .catch((err) => {
+    console.log("race", err);
+  });
+
+Promise.all([p1, p2, p3])
+  .then((res) => {
+    console.log(`all res`, res);
+  })
+  .catch((err) => {
+    console.log("all catch", err);
+  });
