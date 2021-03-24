@@ -19,9 +19,56 @@ const PENDING = "pending";
 const FULFILLED = "fulfilled";
 const REJECTED = "rejected";
 
+function resolvePromise(promise2, x, resolve, reject) {
+  // 循环引用报错
+  if (x === promise2) {
+    return reject(new TypeError("Chaining cycle detected for promise"));
+  }
+  // 防止多次调用
+  let called;
+  // x不是null且x是对象或者函数
+  if (x !== null && (typeof x === "object" || typeof x === "function")) {
+    try {
+      // A+规定，声明then=x的then方法
+      let then = x.then;
+      if (typeof then === "function") {
+        // 就让then执行第一个参数this 后面是成功的回调和失败的回调
+        then.call(
+          x,
+          (y) => {
+            // 成功 失败只能调用一个
+            if (called) {
+              return;
+            }
+            called = true;
+            resolvePromise(promise2, y, resolve, reject);
+          },
+          (err) => {
+            if (called) {
+              return;
+            }
+            called = true;
+            reject(err);
+          }
+        );
+      } else {
+        resolve(x); // 直接成功即可
+      }
+    } catch (error) {
+      // 也属于失败
+      if (called) {
+        return;
+      }
+      called = true;
+      reject(error);
+    }
+  } else {
+    resolve(x);
+  }
+}
+
 class Promise {
   constructor(executor) {
-    console.log("new Promise:", executor.toString());
     this.status = PENDING;
     this.value = "";
     this.reason = "";
@@ -48,19 +95,63 @@ class Promise {
       reject(error);
     }
   }
-  then(onFufilled = () => {}, onRejected = () => {}) {
-    if (this.status === FULFILLED) {
-      onFufilled(this.value);
-    }
-    if (this.status === REJECTED) {
-      onRejected(this.reason);
-    }
-    // 记录pending状态 储存回调
-    if (this.status === PENDING) {
-      // 函数的回调，携带参数（闭包）
-      this.onResolvedCallbacks.push(() => onFufilled(this.value));
-      this.onRejectedCallbacks.push(() => onRejected(this.reason));
-    }
+  then(onFulfilled, onRejected) {
+    // onFulfilled不是函数，就忽略onFulfilled 直接返回value
+    onFulfilled =
+      typeof onFulfilled === "function" ? onFulfilled : (value) => value;
+    // onRejected 如果不是函数就忽略onRejected 抛出错误
+    onRejected =
+      typeof onRejected === "function"
+        ? onRejected
+        : (err) => {
+            throw err;
+          };
+    const promise2 = new Promise((resolve, reject) => {
+      if (this.status === FULFILLED) {
+        // 异步解决：onRejected 返回一个普通的值，失败时如果直接等于value=>value,则会跑到下一个then中的onFulfilled中
+        setTimeout(() => {
+          try {
+            const x = onFulfilled(this.value);
+            resolvePromise(promise2, x, resolve, reject);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+      if (this.status === REJECTED) {
+        setTimeout(() => {
+          try {
+            const x = onRejected(this.reason);
+            resolvePromise(promise2, x, resolve, reject);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+      if (this.status === PENDING) {
+        this.onResolvedCallbacks.push(() => {
+          setTimeout(() => {
+            try {
+              const x = onFulfilled(this.value);
+              resolvePromise(promise2, x, resolve, reject);
+            } catch (error) {
+              reject(error);
+            }
+          });
+        });
+        this.onRejectedCallbacks.push(() => {
+          setTimeout(() => {
+            try {
+              const x = onRejected(this.reason);
+              resolvePromise(promise2, x, resolve, reject);
+            } catch (error) {
+              reject(error);
+            }
+          });
+        });
+      }
+    });
+    return promise2;
   }
 }
 
@@ -74,11 +165,24 @@ new Promise((resolve, reject) => {
       reject("reject 结果:" + n);
     }
   }, 3000);
-}).then(
-  (res) => {
-    console.log("then res:", res);
-  },
-  (err) => {
-    console.log("err:", err);
-  }
-);
+})
+  .then(
+    (res) => {},
+    (err) => {
+      console.log("err:", err);
+      return new Promise((resolve, reject) => {
+        console.log(2);
+        setTimeout(() => {
+          reject(3);
+        }, 3000);
+      });
+    }
+  )
+  .then(
+    (res) => {
+      console.log("then.then", res);
+    },
+    (err) => {
+      console.log("then.err:", err);
+    }
+  );
