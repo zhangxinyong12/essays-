@@ -16,7 +16,7 @@ async function delayer(time = 2000) {
 
 router.get("/", async (ctx, next) => {
   console.log("ctx", ctx);
-  await delayer(1000);
+  await delayer(5000);
   await next();
   ctx.body = {
     a: "aa",

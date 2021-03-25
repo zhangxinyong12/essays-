@@ -55,3 +55,10 @@ Promise.all([p1, p2, p3])
 Promise.resolve({ a: "aaaaaaaaaa" }).then((res) => {
   console.log("a", res);
 });
+
+new Promise((resolve, reject) => {
+  setTimeout(() => {
+    console.log("setTimeout resolve");
+    resolve("resolve");
+  }, 3000);
+});
