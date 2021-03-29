@@ -15,3 +15,6 @@ function test() {
 }
 
 test("test");
+// test arguments [Arguments] { '0': 'test' }
+// fn arguments [Arguments] { '0': 'test' }
+// fn args [ 'fn' ]
