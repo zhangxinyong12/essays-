@@ -1,8 +1,9 @@
 {
   "devDependencies": {
-    "@babel/cli": "^7.12.10"
+    "@babel/cli": "^7.12.10",
+    "eslint": "^7.23.0"
   },
-  "name": "chrome-cenchy",
+  "name": "daydayago",
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
@@ -260,5 +261,13 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhangxinyong12/essays-.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zhangxinyong12/essays-/issues"
+  },
+  "homepage": "https://github.com/zhangxinyong12/essays-#readme"
 }
