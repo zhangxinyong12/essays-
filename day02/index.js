@@ -59,7 +59,7 @@ var matrix = [
     [10, 11, 16, 20],
     [23, 30, 34, 60],
   ],
-  target = 22;
+  target = 23;
 // function searchMatrix(matrix, target) {
 //   const arr = matrix.flat(Infinity);
 //   return arr.includes(target);
