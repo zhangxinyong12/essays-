@@ -17,6 +17,8 @@ var searchMatrix = function (matrix, target) {
     let x = 0,
       y = arr.length - 1,
       flag1 = false;
+    console.log("arr[0]", arr.length, arr[0]);
+
     function fn(arr, target) {
       if (arr[x] === target || arr[y] === target) {
         return (flag1 = true);
@@ -29,7 +31,6 @@ var searchMatrix = function (matrix, target) {
       fn(arr, target);
     }
     fn(arr, target);
-    console.log("flag1", flag1);
     return flag1;
   }
   function fn() {
@@ -40,13 +41,10 @@ var searchMatrix = function (matrix, target) {
       b1 = b[0],
       b2 = b[b.length - 1];
 
-    console.log(a1, a2, b1, b2);
     if (a1 === target || a2 === target || b1 === target || b2 === target) {
-      return (falg = true);
+      return (flag = true);
     }
     if (target > a1 && target < a2) {
-      console.log("find(a)", find(a, target));
-
       return (flag = find(a, target));
       //   for (let i = 0; i < a.length; i++) {
       //     if (a[i] === target) {
@@ -73,11 +71,7 @@ var searchMatrix = function (matrix, target) {
   fn();
   return flag;
 };
-var matrix = [
-    [1, 3, 5, 7],
-    [10, 11, 16, 20],
-    [23, 30, 34, 60],
-  ],
+var matrix = [[3]],
   target = 3;
 // function searchMatrix(matrix, target) {
 //   const arr = matrix.flat(Infinity);
