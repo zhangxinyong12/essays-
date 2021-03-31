@@ -13,7 +13,7 @@ function getName() {
 }
 
 Function.prototype.$call = function (context, ...args) {
-  context = context || global;
+  context = context;
   context.fn = this;
   delete context.fn(...args);
   return;
@@ -24,6 +24,31 @@ Function.prototype.$apply = function (context, args) {
   delete context.fn(args);
   return;
 };
-// getName.bind(this)("1111111");
+
+Function.prototype.$bind = function (context) {
+  if (typeof this !== "function") {
+    throw new Error(
+      "Function.prototype.bimd - what is tring to be bound is not callable"
+    );
+  }
+  const slef = this;
+  const args = Array.prototype.slice.call(arguments, 1);
+  const fNOP = function () {};
+  const fBound = function () {
+    const bindArgs = Array.prototype.slice.call(arguments);
+    return slef.apply(
+      this instanceof fNOP ? this : context,
+      args.concat(bindArgs)
+    );
+  };
+  fNOP.prototype = this.prototype;
+  fBound.prototype = new fNOP();
+  return fBound;
+};
+
+getName.bind(this)("1111111");
 // getName.$call(null, 11, 234);
-getName.$apply(zhangsan, [11, 234]);
+// getName.$apply(zhangsan, [11, 234]);
+let arr = [];
+var a = Object.prototype.toString.call(arr);
+console.log(a);
